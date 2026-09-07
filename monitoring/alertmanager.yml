@@ -1,0 +1,16 @@
+
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'job']
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 4h
+  receiver: 'discord'
+
+receivers:
+  - name: 'discord'
+    webhook_configs:
+      - url: 'http://webhook:5000/alert'
+        send_resolved: true

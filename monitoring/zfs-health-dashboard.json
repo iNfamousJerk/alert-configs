@@ -1,0 +1,142 @@
+
+{
+  "title": "ZFS Health & Performance",
+  "uid": "zfs-health",
+  "tags": ["zfs", "storage"],
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "editable": true,
+  "panels": [
+    {
+      "title": "ZFS Pool State (0=healthy)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 12, "x": 0, "y": 0 },
+      "id": 1,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "green", "value": 0 },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "ONLINE", "color": "green" } } },
+            { "type": "value", "options": { "1": { "text": "DEGRADED/ERR", "color": "red" } } }
+          ]
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "node_zfs_zpool_state",
+          "legendFormat": "{{zpool}} ({{instance}})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "ZFS Pool Capacity",
+      "type": "gauge",
+      "gridPos": { "h": 4, "w": 12, "x": 12, "y": 0 },
+      "id": 2,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 80 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      },
+      "targets": [
+        {
+          "expr": "100 - (node_filesystem_avail_bytes{fstype=\"zfs\"} / node_filesystem_size_bytes{fstype=\"zfs\"}) * 100",
+          "legendFormat": "{{mountpoint}} ({{instance}})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "ARC Cache Usage",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 4 },
+      "id": 3,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "fillOpacity": 30, "lineWidth": 1, "showPoints": "never" }
+        }
+      },
+      "targets": [
+        { "expr": "node_zfs_arc_size", "legendFormat": "arc used ({{instance}})", "refId": "A" },
+        { "expr": "node_zfs_arc_c_max", "legendFormat": "arc max ({{instance}})", "refId": "B" },
+        { "expr": "node_zfs_arc_data_size", "legendFormat": "data ({{instance}})", "refId": "C" }
+      ]
+    },
+    {
+      "title": "ARC Hit Ratio",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 4 },
+      "id": 4,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "fillOpacity": 20, "lineWidth": 1, "showPoints": "never" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "100 * rate(node_zfs_arc_hits[5m]) / (rate(node_zfs_arc_hits[5m]) + rate(node_zfs_arc_misses[5m]))",
+          "legendFormat": "hit ratio ({{instance}})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "ZFS Dataset I/O",
+      "type": "timeseries",
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 11 },
+      "id": 5,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "fillOpacity": 10, "lineWidth": 1, "showPoints": "never" }
+        }
+      },
+      "targets": [
+        {
+          "expr": "rate(node_zfs_zpool_dataset_reads{dataset=~\".+\"}[5m])",
+          "legendFormat": "reads {{dataset}} ({{instance}})",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(node_zfs_zpool_dataset_writes{dataset=~\".+\"}[5m])",
+          "legendFormat": "writes {{dataset}} ({{instance}})",
+          "refId": "B"
+        }
+      ]
+    }
+  ]
+}

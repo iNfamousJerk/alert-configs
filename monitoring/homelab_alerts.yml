@@ -1,0 +1,246 @@
+
+groups:
+  - name: homelab_system
+    interval: 30s
+    rules:
+      - alert: InstanceDown
+        expr: up{job!~"blackbox.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "{{ $labels.job }} is DOWN on {{ $labels.instance }}"
+          description: "{{ $labels.job }} target {{ $labels.instance }} unreachable for over 1 minute."
+
+      - alert: NodeExporterMissing
+        expr: absent(up{job=~"node_.*"}) or count(up{job=~"node_.*"} == 1) < 2
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node exporter missing"
+          description: "One or more node_exporter targets not reporting."
+
+      - alert: HighDiskUsage
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs",fstype!="overlay",fstype!="devtmpfs",fstype!="zfs"} / node_filesystem_size_bytes{fstype!="tmpfs",fstype!="overlay",fstype!="devtmpfs",fstype!="zfs"})) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk >85% on {{ $labels.instance }}"
+          description: "{{ $labels.mountpoint }} is {{ $value | humanizePercentage }} full"
+
+      - alert: DiskAlmostFull
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs",fstype!="overlay",fstype!="devtmpfs",fstype!="zfs"} / node_filesystem_size_bytes{fstype!="tmpfs",fstype!="overlay",fstype!="devtmpfs",fstype!="zfs"})) * 100 > 95
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "DISK CRITICAL on {{ $labels.instance }}"
+          description: "{{ $labels.mountpoint }} is {{ $value | humanizePercentage }} full - act now!"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "RAM >90% on {{ $labels.instance }}"
+          description: "Memory at {{ $value | humanizePercentage }}"
+
+      - alert: CriticalMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 97
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "RAM CRITICAL on {{ $labels.instance }}"
+          description: "Memory at {{ $value | humanizePercentage }} - OOM risk!"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU >90% on {{ $labels.instance }}"
+          description: "CPU at {{ $value | humanizePercentage }} for 10+ min"
+
+      - alert: HighLoadAverage
+        expr: node_load1 > count(node_cpu_seconds_total{mode="idle"}) by(instance) * 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High load on {{ $labels.instance }}"
+          description: "1-min load {{ $value }} (threshold: cores x 2)"
+
+      - alert: ExtremeLoadAverage
+        expr: node_load1 > count(node_cpu_seconds_total{mode="idle"}) by(instance) * 4
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Extreme load on {{ $labels.instance }}"
+          description: "1-min load {{ $value }} (threshold: cores x 4) - overloaded!"
+
+  - name: homelab_containers
+    interval: 30s
+    rules:
+      - alert: ContainerOOM
+        expr: increase(container_oom_events_total{name!=""}[5m]) > 0
+        labels:
+          severity: critical
+        annotations:
+          summary: "OOM in container {{ $labels.name }}"
+          description: "Container {{ $labels.name }} hit OOM! Increase memory limit."
+
+      - alert: ContainerHighMemoryMB
+        expr: container_memory_usage_bytes{name!=""} / 1024 / 1024 > 900
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Container {{ $labels.name }} >500MB RAM"
+          description: "{{ $labels.name }} using {{ $value | humanize1024 }}"
+
+      - alert: ContainerHighCPU
+        expr: rate(container_cpu_usage_seconds_total{name!=""}[5m]) > 0.8
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ $labels.name }} high CPU"
+          description: "{{ $labels.name }} CPU at {{ $value }} cores for 10+ min"
+
+      - alert: ContainerDiskUsage
+        expr: (container_fs_usage_bytes{name!=""} / container_fs_limit_bytes{name!=""}) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Container {{ $labels.name }} disk >85%"
+          description: "{{ $labels.name }} filesystem {{ $value | humanizePercentage }} full"
+
+      - alert: ContainerNetworkErrors
+        expr: rate(container_network_receive_errors_total{name!=""}[5m]) > 0 or rate(container_network_transmit_errors_total{name!=""}[5m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Network errors on {{ $labels.name }}"
+          description: "Container {{ $labels.name }} has network errors"
+
+  - name: homelab_services
+    interval: 30s
+    rules:
+      - alert: PiholeStatus
+        expr: pihole_status == 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pi-hole DISABLED"
+          description: "Pi-hole is disabled. Check http://10.0.0.2/admin"
+
+      - alert: PiholeExporterDown
+        expr: absent(up{job="pihole"} == 1)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pi-hole exporter DOWN"
+          description: "No Pi-hole metrics for 2+ minutes"
+
+      - alert: PiholeBlockRateDrop
+        expr: pihole_ads_percentage_today < 5
+        for: 15m
+        labels:
+          severity: info
+        annotations:
+          summary: "Pi-hole blocking low ({{ $value | humanizePercentage }})"
+          description: "Ads blocked today is only {{ $value | humanizePercentage }}"
+
+      - alert: ServiceHTTPDown
+        expr: probe_success{job="blackbox_http"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "HTTP service down: {{ $labels.instance }}"
+          description: "HTTP probe failed for {{ $labels.instance }}"
+
+
+      - alert: ServiceTCPDown
+        expr: probe_success{job="blackbox_tcp"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "TCP service down: {{ $labels.instance }}"
+          description: "TCP probe failed for {{ $labels.instance }}"
+
+      - alert: CadvisorDown
+        expr: absent(up{job="cadvisor"} == 1)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "cAdvisor DOWN"
+          description: "Container metrics unavailable"
+
+  - name: homelab_ups
+    interval: 30s
+    rules:
+      - alert: UPSOnBattery
+        expr: nut_ups_status > 1
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "UPS ON BATTERY!"
+          description: "CyberPower CP1500 running on battery! Runtime: {{ $labels.instance }}"
+
+      - alert: UPSBatteryLow
+        expr: nut_battery_charge < 15 and nut_battery_charge >= 0
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "UPS battery LOW ({{ $value }}%)"
+          description: "CyberPower CP1500 battery at {{ $value }}% - shutdown imminent!"
+
+      - alert: UPSHighLoad
+        expr: nut_ups_load > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "UPS load high ({{ $value }}%)"
+          description: "CyberPower CP1500 at {{ $value }}% load - consider redistributing"
+
+      - alert: UPSLowRuntime
+        expr: nut_battery_runtime < 120 and nut_battery_runtime >= 0
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "UPS runtime critical ({{ $value | humanizeDuration }})"
+          description: "Only {{ $value | humanizeDuration }} of battery runtime remaining"
+
+      - alert: NUTExporterDown
+        expr: absent(up{job="nut"} == 1)
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "NUT exporter DOWN"
+          description: "UPS metrics unavailable for 2+ minutes"
+      - alert: UPSDisconnected
+        expr: nut_ups_status == -1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "UPS DISCONNECTED!"
+          description: "NUT cannot reach the CyberPower UPS - USB cable may be unplugged or driver failed."

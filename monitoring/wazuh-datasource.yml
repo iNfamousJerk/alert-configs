@@ -1,0 +1,91 @@
+
+apiVersion: 1
+
+datasources:
+  - name: Wazuh Indexer
+    type: elasticsearch
+    access: proxy
+    url: https://10.0.1.9:9200
+    isDefault: false
+    jsonData:
+      database: "wazuh-alerts-4.x-*"
+      esVersion: "7.10.2"
+      timeField: "@timestamp"
+      tlsAuth: true
+      tlsAuthWithCACert: true
+      tlsSkipVerify: true
+    secureJsonData:
+      tlsCACert: |
+        -----BEGIN CERTIFICATE-----
+        MIIDSzCCAjOgAwIBAgIUFX/uyf01tv5WlBX912HwISSp7uYwDQYJKoZIhvcNAQEL
+        BQAwNTEOMAwGA1UECwwFV2F6dWgxDjAMBgNVBAoMBVdhenVoMRMwEQYDVQQHDApD
+        YWxpZm9ybmlhMB4XDTI2MDUyMzAwMTMyNFoXDTM2MDUyMDAwMTMyNFowNTEOMAwG
+        A1UECwwFV2F6dWgxDjAMBgNVBAoMBVdhenVoMRMwEQYDVQQHDApDYWxpZm9ybmlh
+        MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzJNL9JdD4mUFo70F2VHM
+        VPmB+W+qO8h0HeFkrT2TwyFJ+X15dhBj5NeXnRxzeurcwKSnhmSnJbMVwHavSlne
+        UcKToZjKyxGyDYOPdRwg8kq9Ij3XbvzgmWazLk8x475xonQzhOQYIvPadC97F9Bq
+        fk6tHIdPnj4NKSmKVTP503/zyBzh+rn4ynQAEDikWBSy+S6Y5mcGRv+wZgC9zMu8
+        zdVIEyL3UuGdt9bq5kjeZ83JR11HbKAY8XQ1nQpZdNmQt+AT4OjClgzwpelQjZUT
+        4pLFSIi3Kya+ER10IukyukqZ1FcehaotloDiIZFHdksiwF0sx29wZVXxR3ayaYYb
+        AQIDAQABo1MwUTAdBgNVHQ4EFgQU7zQagSAj3fNsIuUKfzYT5vTXP2swHwYDVR0j
+        BBgwFoAU7zQagSAj3fNsIuUKfzYT5vTXP2swDwYDVR0TAQH/BAUwAwEB/zANBgkq
+        hkiG9w0BAQsFAAOCAQEAJxohO1yWokxpm5+YBTVgoFoROml3sdkS/4Ga5QAE4wm7
+        dvnkgz4qPeHKMeqQ/0VBG/1PCbSN4AnMrHHAjLoeY6WWtO2wVIIPYPpjlG5vX9eY
+        A6G5UEdM77cOLKTweBQlKnNSvicbSQ222pA/lM+NEqeRRJnmny6veJlDkQBpK1nP
+        NMP9YX7Ud+dFg6QhW83gNUdxGUnq/XACPRSfX16STrOPyVEftduTqu6b4boJt57c
+        LCxSXHwSQdJYU7as13y6hxzHb0Up/8ws2DhTXv1Uz9tS6O/i+DS8FQ7BGHMWh4jc
+        HafKlr0kxKqzYdpJMzvIqbruSiy++5qhcFm2fa10hw==
+        -----END CERTIFICATE-----
+
+      tlsClientCert: |
+        -----BEGIN CERTIFICATE-----
+        MIIDVzCCAj+gAwIBAgIUHg/NPZiDKqzpEuTT9lin1gLakgowDQYJKoZIhvcNAQEL
+        BQAwNTEOMAwGA1UECwwFV2F6dWgxDjAMBgNVBAoMBVdhenVoMRMwEQYDVQQHDApD
+        YWxpZm9ybmlhMB4XDTI2MDUyMzAwMTMyNFoXDTM2MDUyMDAwMTMyNFowUjELMAkG
+        A1UEBhMCVVMxEzARBgNVBAcMCkNhbGlmb3JuaWExDjAMBgNVBAoMBVdhenVoMQ4w
+        DAYDVQQLDAVXYXp1aDEOMAwGA1UEAwwFYWRtaW4wggEiMA0GCSqGSIb3DQEBAQUA
+        A4IBDwAwggEKAoIBAQC89AYlKtbGtnqPjIve+c7T47OcjkLkIaTX6ZStyJriQKEY
+        2cp1SWkyKk6j+d/fbdbWogjeLR/TXyZYWvJqw/bytSpSkDhpYaRisQmgYxeFtDnM
+        MI2+UwAZ6/dfCf51fxRGVJV6IZCw9jc6QgTFIei+4Nn78RN5kbny0RXr+K8XwJiG
+        CXGUmdMB6RrjtMnbTer0pqw43GsQU3p7deYht/HsQuLOASPs6YmPKfEWkR9YoRlI
+        TjKmYNWN70Ss44IodEvGnlNxZTLuxnTUccdKSrD/9yr25OZ4WWhviQkCLV0OAvsV
+        P6tN+R6Mv6I6BBiJvpXzw7q+rqGK8UXrBU92jWRhAgMBAAGjQjBAMB0GA1UdDgQW
+        BBRNFzY68fqLObsZFz6b3vSxwrR0fzAfBgNVHSMEGDAWgBTvNBqBICPd82wi5Qp/
+        NhPm9Nc/azANBgkqhkiG9w0BAQsFAAOCAQEAgdNPFNgUB5g7SWLCDfFMbUSh2j9O
+        eGhRyhNtmDueuWHh3EBHekmQtulRYkAnGkDz9vG9x31T3LLuj/6buRQoEwfdQbMy
+        dX2z2BlnSjIiKyNdI2m0GghWO3WnWU191RCCEmP0Pbz588dGkEXoE4Zw0J68LhkN
+        FhX0gdBAk5tuoS/tT9qAaQfDB0euKTorEYtcq+4jWaMw9F51UZG1jwb0QmeJA3yw
+        m3bqKX/u+O5QLCeGsW0GjXARoURfadhjbdzjzDuxeoFx4KPt3OkmuVYC+4ikPFoN
+        rCZGAIE7dVaAw/YShhRRhzlOV2hhHiJgRo42YE2dhCeEXc5KJ4Ttyjum4Q==
+        -----END CERTIFICATE-----
+
+      tlsClientKey: |
+        -----BEGIN PRIVATE KEY-----
+        MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC89AYlKtbGtnqP
+        jIve+c7T47OcjkLkIaTX6ZStyJriQKEY2cp1SWkyKk6j+d/fbdbWogjeLR/TXyZY
+        WvJqw/bytSpSkDhpYaRisQmgYxeFtDnMMI2+UwAZ6/dfCf51fxRGVJV6IZCw9jc6
+        QgTFIei+4Nn78RN5kbny0RXr+K8XwJiGCXGUmdMB6RrjtMnbTer0pqw43GsQU3p7
+        deYht/HsQuLOASPs6YmPKfEWkR9YoRlITjKmYNWN70Ss44IodEvGnlNxZTLuxnTU
+        ccdKSrD/9yr25OZ4WWhviQkCLV0OAvsVP6tN+R6Mv6I6BBiJvpXzw7q+rqGK8UXr
+        BU92jWRhAgMBAAECgf8Tle6fa6OgvoBRKgBVk1hmHj0/4aOx76ZCBEaAc9PjRHRJ
+        zNu4p/7ImPV7ib1YmTfHGfJRXm5SqEo1zBL5NPttGrWs63ztb3GRgCO/ToYqzJ8M
+        giB4R6Ix6RXozSmJ8gbDaBNfjFH8TvbqidsHAbzMDEuwpAx8KN7LHs7UnbJj8W5E
+        uspS6Yj14gtPTfwxoyAW2lsNh1hYv8BixzlHZL+OLQNhu2yf4SHxB52hJOgNryQw
+        zim/zMw1PXxcg6zKD6Y2NktJ7p9jvEJwjQAAA87TENLIP5OHjh40AntyeH5iQyHn
+        Fyqwm8jgFieci9Mvc4oqYdeA7UietT5rPGWFxUECgYEA3pAObum6+wB8c8JrVx2R
+        zdAq3wWc3ow2pv2UvjU164OpMaYZsaQTIbXl1IPT8/rhB+VdwyjWAniQGLlWlga5
+        n55A1sQdGI439oYe8ueUNtie2ZBCKYOJv87hHKdrIF9D7Krjplk9HLQ9D9ZQd2Vd
+        5XnLf50RFPQPr7PfeSP+hhECgYEA2VdRnTK8X0NV3h70mbB+zh+GUxrd/gqcvYR7
+        1bcBPxAYK0J6t4spX5WL6hx2iOZZ7LGqhmS/FonPAO/CUkos92Se5REV9uLJsgW7
+        HwHAQSFUIqGNBLLElqF90pXJWq8IogOZtnNI1C0iJwv4dpiU9PKgTMVwvhjbUiYd
+        oCWIaVECgYBRdMPzkBPhHdJuw69pmObuPswSCAnb4dF22MSBwRPU+MEJ7NLmkzh1
+        VA+j8gO2/hEyRJ5GeUGqcdm7Usn/6sIxS0hL0kcb36FX1sqo+Fzkne+1jPjKHNxj
+        mSIGzLeGh5dinUDodyzIvqbCjxuwNydgf20dbaz80D6Vfe3CdowHIQKBgQCx+fpA
+        U0LEc9yGJy1ACbLdUh1qQm8VUFVoMGxD5zejD6frDOZ3FQNNXaYUkThUBOYQmLC+
+        mxOL/k/AQZYMUuedsw0XIbWt1as7F8xSqNlpvEQsk8Rp24Z2n0nsv3ICy6CzI2Wl
+        baRu84KrHPdbDrm0GFdCZtBbKvm2vLW35eRd8QKBgQCQpUiqmTZFM2AeeKO3jSWC
+        cslyy5jNKa4ifDFYatuW5ifss2nTHJ0qOQEEQjOX19BG+J/4s/x/UdJM0IpML3qv
+        n18vhK4/cLJL3E9BB+Zmdy97MYX0KU/DZihGUA19jLwAt8QLJIysBgaFcpxouGSY
+        mlyuMCn43k8tPpB6TGFMgw==
+        -----END PRIVATE KEY-----
+

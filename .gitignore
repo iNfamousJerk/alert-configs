@@ -1,0 +1,26 @@
+# Secrets / environment — never commit real credentials
+.env
+.env.*
+!.env.example
+*.secret
+secrets/
+
+# Logs
+*.log
+
+# Local runtime / scratch config (not meant for version control)
+config/
+*.local.yml
+*.local.yaml
+
+# Python
+__pycache__/
+*.pyc
+
+# State files created at runtime (device db, dedup state, api keys)
+*.state
+known_devices.json
+alert_osticket_key.txt
+
+# OS / editor cruft
+.DS_Store
