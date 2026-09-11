@@ -1,0 +1,23 @@
+<!--
+  Wazuh → osTicket integration block.
+
+  Merge this INSIDE the FIRST <ossec_config> element of ossec.conf
+  (place it just before the first </ossec_config> — there are TWO in a
+  default Wazuh install, and it must go in the first one).
+
+  On the Docker single-node stack, patch BOTH copies:
+    - runtime:  /var/lib/docker/volumes/single-node_wazuh_etc/_data/ossec.conf
+    - template: <compose>/config/wazuh_cluster/wazuh_manager.conf
+  The manager regenerates the runtime file from the template on init, so
+  editing only the runtime volume reverts on the next container restart.
+
+  <hook_url> is passed to the script as argv[2]; the script reads it but the
+  osTicket endpoint is also compiled into custom-osticket.py's API_URL. Keep
+  the two in sync.
+-->
+<integration>
+  <name>custom-osticket</name>
+  <hook_url>http://10.0.1.16:8081/api/tickets.json</hook_url>
+  <level>10</level>
+  <alert_format>json</alert_format>
+</integration>

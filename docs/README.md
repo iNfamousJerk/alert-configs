@@ -25,6 +25,7 @@ alert-configs/
 │   ├── SETUP-WATCHDOG.md       ← how to add a new cron watchdog
 │   └── ALERTS-INVENTORY.md     ← every script + alert rule, at a glance
 ├── hermes-scripts/             ← agent-cron alert scripts & integrations
+├── wazuh-ticketing/            ← SIEM alerts (Wazuh) → helpdesk tickets
 ├── monitoring/                 ← Prometheus / Alertmanager / Grafana stack files
 ├── watchdogs/
 │   ├── pve1/                   ← shell watchdogs run on hypervisor host A

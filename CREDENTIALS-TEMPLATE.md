@@ -19,6 +19,7 @@ committing) with real values:
 | `YOUR_OPNSENSE_ROOT_PASSWORD` | SSH/root password for the router/firewall (used to read the ARP table) | network-device-alert.py |
 | `YOUR_DISCORD_WEBHOOK_URL` | Full Discord webhook URL for alert delivery | daily report, disk health, disk-failure watchdog, network-device alerts, webhook receiver, etc. |
 | `YOUR_OSTICKET_CLIENT_EMAIL` | Email of an existing helpdesk (osTicket) client used when opening tickets | alert-to-osticket.py |
+| `YOUR_OSTICKET_API_KEY` | 32-char hex osTicket API key, **IP-scoped** to the host that opens tickets | `wazuh-ticketing/` — read at runtime from `.osticket_key`, never embedded in the script |
 
 ## Tokens referenced by the surrounding tooling / CI (not embedded in scripts)
 
