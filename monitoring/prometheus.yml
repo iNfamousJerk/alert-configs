@@ -25,15 +25,15 @@ scrape_configs:
           - '10.0.0.12:9100'  # PBS
     relabel_configs:
       - source_labels: [__address__]
-        regex: '10\.2\.7\.64:9100'
+        regex: '10\.0\.0\.10:9100'
         replacement: 'pve (10.0.0.10)'
         target_label: instance
       - source_labels: [__address__]
-        regex: '10\.2\.7\.62:9100'
+        regex: '10\.0\.0\.11:9100'
         replacement: 'pve2 (10.0.0.11)'
         target_label: instance
       - source_labels: [__address__]
-        regex: '10\.2\.7\.65:9100'
+        regex: '10\.0\.0\.12:9100'
         replacement: 'pbs (10.0.0.12)'
         target_label: instance
 
@@ -72,7 +72,7 @@ scrape_configs:
           - '10.0.1.13:8080'   # tdarr
     relabel_configs:
       - source_labels: [__address__]
-        regex: '10\.2\.7\.(\d+):(\d+)'
+        regex: '10\.0\.1\.(\d+):(\d+)'
         replacement: 'ct$1:$2'
         target_label: instance
 
